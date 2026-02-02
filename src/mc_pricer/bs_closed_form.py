@@ -20,13 +20,14 @@ class BSParams:
     sigma: volatility (annualized)
     T: time to maturity in years
     """
+
     S0: float
     K: float
     r: float
     q: float
     sigma: float
     T: float
-    
+
 
 def _validate(p: BSParams) -> None:
     if p.S0 <= 0.0:
@@ -42,7 +43,9 @@ def _validate(p: BSParams) -> None:
 def _d1_d2(p: BSParams) -> tuple[float, float]:
     """Compute d1 and d2. Assumes validated p and sigma>0, T>0."""
     vol_sqrt_t = p.sigma * math.sqrt(p.T)
-    d1 = (math.log(p.S0 / p.K) + (p.r - p.q + 0.5 * p.sigma * p.sigma) * p.T) / vol_sqrt_t
+    d1 = (
+        math.log(p.S0 / p.K) + (p.r - p.q + 0.5 * p.sigma * p.sigma) * p.T
+    ) / vol_sqrt_t
     d2 = d1 - vol_sqrt_t
     return d1, d2
 

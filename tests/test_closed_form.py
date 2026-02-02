@@ -2,7 +2,15 @@ import math
 
 import pytest
 
-from mc_pricer.bs_closed_form import BSParams, bs_delta, bs_gamma, bs_price, bs_vega, put_call_parity
+from mc_pricer.bs_closed_form import (
+    BSParams,
+    bs_delta,
+    bs_gamma,
+    bs_price,
+    bs_vega,
+    put_call_parity,
+)
+
 
 def test_dummy():
     assert True
