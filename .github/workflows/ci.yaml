@@ -17,6 +17,10 @@ jobs:
       run_tests: ${{ steps.flags.outputs.run_tests }}
       run_e2e: ${{ steps.flags.outputs.run_e2e }}
     steps:
+      - name: Checkout (for git log)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Decide which jobs to run
         id: flags
         shell: bash
@@ -30,7 +34,9 @@ jobs:
           if [[ "$EVENT_NAME" == "push" ]]; then
             MSG="$PUSH_MSG"
           else
-            MSG="$PR_TITLE $PR_BRANCH"
+            # Collect latest commit messages from the PR branch
+            COMMIT_MSGS="$(git log -n 20 --pretty=%B | tr '\n' ' ')"
+            MSG="$PR_TITLE $PR_BRANCH $COMMIT_MSGS"
           fi
 
           echo "Message used for CI selection: $MSG"
