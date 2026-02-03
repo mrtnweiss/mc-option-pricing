@@ -28,7 +28,9 @@ def test_mc_price_matches_bs_within_confidence():
 def test_mc_put_call_parity_approx_holds():
     p = BSParams(S0=100.0, K=110.0, r=0.01, q=0.0, sigma=0.25, T=0.5)
 
-    call = mc_price_european_vanilla(p, "call", n_paths=150_000, seed=7, antithetic=True)
+    call = mc_price_european_vanilla(
+        p, "call", n_paths=150_000, seed=7, antithetic=True
+    )
     put = mc_price_european_vanilla(p, "put", n_paths=150_000, seed=7, antithetic=True)
 
     lhs = call.price - put.price

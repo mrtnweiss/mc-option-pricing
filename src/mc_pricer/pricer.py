@@ -23,6 +23,10 @@ class MCResult:
     seed: Optional[int]
     antithetic: bool
 
+    @property
+    def ci95(self) -> tuple[float, float]:
+        return (self.ci_low, self.ci_high)
+
 
 def _mc_mean_and_stderr(discounted_payoff: np.ndarray) -> tuple[float, float]:
     """Return (mean, stderr) from discounted payoffs."""
