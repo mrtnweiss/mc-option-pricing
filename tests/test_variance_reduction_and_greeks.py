@@ -60,7 +60,9 @@ def test_delta_pathwise_close_to_bs():
     seed = 42
     antithetic = True
 
-    res = mc_delta_pathwise(p, "call", n_paths=n_paths, seed=seed, antithetic=antithetic)
+    res = mc_delta_pathwise(
+        p, "call", n_paths=n_paths, seed=seed, antithetic=antithetic
+    )
     target = bs_delta(p, "call")
 
     assert hasattr(res, "value")

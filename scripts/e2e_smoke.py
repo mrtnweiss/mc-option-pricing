@@ -69,11 +69,19 @@ def main() -> int:
     delta_fd = mc_delta_fd_crn(
         p, "call", n_paths=n_paths, seed=seed, antithetic=antithetic
     )
-    vega_fd = mc_vega_fd_crn(p, "call", n_paths=n_paths, seed=seed, antithetic=antithetic)
+    vega_fd = mc_vega_fd_crn(
+        p, "call", n_paths=n_paths, seed=seed, antithetic=antithetic
+    )
 
-    print(f"  Delta (pathwise): {delta_pw.value:.6f}  CI95={delta_pw.ci95}  BS={bs_d:.6f}")
-    print(f"  Delta (FD+CRN):   {delta_fd.value:.6f}  CI95={delta_fd.ci95}  BS={bs_d:.6f}")
-    print(f"  Vega  (FD+CRN):   {vega_fd.value:.6f}  CI95={vega_fd.ci95}  BS={bs_v:.6f}")
+    print(
+        f"  Delta (pathwise): {delta_pw.value:.6f}  CI95={delta_pw.ci95}  BS={bs_d:.6f}"
+    )
+    print(
+        f"  Delta (FD+CRN):   {delta_fd.value:.6f}  CI95={delta_fd.ci95}  BS={bs_d:.6f}"
+    )
+    print(
+        f"  Vega  (FD+CRN):   {vega_fd.value:.6f}  CI95={vega_fd.ci95}  BS={bs_v:.6f}"
+    )
 
     # Use stderr-based tolerances (robust across platforms).
     _assert(
