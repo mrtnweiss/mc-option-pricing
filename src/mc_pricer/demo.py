@@ -18,7 +18,9 @@ def main() -> None:
     )
 
     for opt in ("call", "put"):
-        mc = mc_price_european_vanilla(p, option=opt, n_paths=n_paths, seed=seed, antithetic=antithetic)
+        mc = mc_price_european_vanilla(
+            p, option=opt, n_paths=n_paths, seed=seed, antithetic=antithetic
+        )
         bs = bs_price(p, opt)
 
         lo, hi = mc.ci95
