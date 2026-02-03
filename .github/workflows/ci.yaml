@@ -25,11 +25,12 @@ jobs:
           PUSH_MSG: ${{ github.event.head_commit.message }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           REF_NAME: ${{ github.ref_name }}
+          PR_BRANCH: ${{ github.head_ref }}
         run: |
           if [[ "$EVENT_NAME" == "push" ]]; then
             MSG="$PUSH_MSG"
           else
-            MSG="$PR_TITLE"
+            MSG="$PR_TITLE $PR_BRANCH"
           fi
 
           echo "Message used for CI selection: $MSG"
