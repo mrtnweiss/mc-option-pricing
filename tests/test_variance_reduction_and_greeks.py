@@ -82,8 +82,10 @@ def test_delta_pathwise_close_to_bs():
 @pytest.mark.slow
 def test_delta_fd_crn_close_to_bs():
     """
-    Finite-difference delta with common random numbers (CRN) should be close to BS delta.
+    Finite-difference delta with common random numbers (CRN) should be close to
+    BS delta.
     """
+
     p = BSParams(S0=100.0, K=100.0, r=0.02, q=0.01, sigma=0.2, T=1.0)
     n_paths = 200_000
     seed = 42

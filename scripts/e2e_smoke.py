@@ -15,7 +15,7 @@ def _assert(cond: bool, msg: str) -> None:
 def main() -> int:
     # Keep it "smoke": fast enough for CI, but stable via seeds + antithetic.
     p = BSParams(S0=100.0, K=100.0, r=0.02, q=0.01, sigma=0.2, T=1.0)
-    n_paths = 80_000  # CI-friendly
+    n_paths = 80_000
     seed = 42
     antithetic = True
 
@@ -33,25 +33,25 @@ def main() -> int:
         bs = bs_price(p, opt)
 
         err = abs(mc.price - bs)
-        k = 5.0  # allow a few standard errors
+        k = 5.0  # allow a few standard errors (robust in CI)
 
         print(f"{opt.upper():>4} price:")
         print(
-            f"  MC={mc.price:.6f}  stderr={mc.stderr:.6f}  CI95={mc.ci95}  BS={bs:.6f}  |err|={err:.6f}"
+            f"  MC={mc.price:.6f}  stderr={mc.stderr:.6f}  CI95={mc.ci95}  "
+            f"BS={bs:.6f}  |err|={err:.6f}"
         )
         _assert(
             err <= k * mc.stderr,
-            f"{opt} MC price too far from BS: |err|={err} > {k}*stderr={k*mc.stderr}",
+            f"{opt} MC price too far from BS: |err|={err} > {k}*stderr={k * mc.stderr}",
         )
 
         # ---------- Control Variate smoke ----------
         mc_cv = mc_price_european_vanilla_cv(
             p, option=opt, n_paths=n_paths, seed=seed, antithetic=antithetic
         )
-        # CV should reduce variance typically; use a soft check.
-        # We accept "no worse than" in rare edge cases.
         print(
-            f"  CV={mc_cv.price:.6f}  stderr={mc_cv.stderr:.6f}  CI95={mc_cv.ci95}  beta={mc_cv.beta:.4f}"
+            f"  CV={mc_cv.price:.6f}  stderr={mc_cv.stderr:.6f}  CI95={mc_cv.ci95}  "
+            f"beta={mc_cv.beta:.4f}"
         )
         _assert(
             mc_cv.stderr <= mc.stderr * 1.05,
@@ -83,18 +83,17 @@ def main() -> int:
         f"  Vega  (FD+CRN):   {vega_fd.value:.6f}  CI95={vega_fd.ci95}  BS={bs_v:.6f}"
     )
 
-    # Use stderr-based tolerances (robust across platforms).
     _assert(
         abs(delta_pw.value - bs_d) <= 5.0 * delta_pw.stderr,
-        f"Pathwise delta too far from BS: |err|={abs(delta_pw.value - bs_d)} > 5*stderr={5*delta_pw.stderr}",
+        f"Pathwise delta too far from BS: |err|={abs(delta_pw.value - bs_d)}",
     )
     _assert(
         abs(delta_fd.value - bs_d) <= 5.0 * delta_fd.stderr,
-        f"FD+CRN delta too far from BS: |err|={abs(delta_fd.value - bs_d)} > 5*stderr={5*delta_fd.stderr}",
+        f"FD+CRN delta too far from BS: |err|={abs(delta_fd.value - bs_d)}",
     )
     _assert(
         abs(vega_fd.value - bs_v) <= 6.0 * vega_fd.stderr,
-        f"FD+CRN vega too far from BS: |err|={abs(vega_fd.value - bs_v)} > 6*stderr={6*vega_fd.stderr}",
+        f"FD+CRN vega too far from BS: |err|={abs(vega_fd.value - bs_v)}",
     )
 
     print("\nE2E smoke passed.")

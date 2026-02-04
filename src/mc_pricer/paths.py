@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-from typing import Optional
 
 import numpy as np
 
@@ -14,22 +13,15 @@ def simulate_gbm_terminal(
     sigma: float,
     T: float,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
 ) -> np.ndarray:
-    """Simulate terminal values S_T under GBM (Black–Scholes) under risk-neutral measure.
+    """Simulate terminal values S_T under GBM (Black–Scholes)
+    under the risk-neutral measure.
 
     S_T = S0 * exp((r - q - 0.5*sigma^2)*T + sigma*sqrt(T)*Z), Z~N(0,1)
-
-    Args:
-        S0, r, q, sigma, T: model parameters
-        n_paths: number of Monte Carlo samples
-        seed: RNG seed for reproducibility
-        antithetic: if True, uses antithetic variates (Z and -Z) to reduce variance
-
-    Returns:
-        np.ndarray of shape (n_paths,) with simulated terminal prices.
     """
+
     if S0 <= 0.0:
         raise ValueError("S0 must be > 0")
     if sigma < 0.0:
