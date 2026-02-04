@@ -71,29 +71,21 @@ python scripts/e2e_smoke.py
 
 ### Model (risk-neutral GBM)
 
-Under Black–Scholes, the terminal price under the risk-neutral measure is
+Under Black–Scholes, the terminal price under the risk-neutral measure is:
 
-\[
-S_T = S_0 \exp\left((r-q-\tfrac12\sigma^2)T + \sigma\sqrt{T}Z\right), \quad Z \sim \mathcal{N}(0,1)
-\]
+Sₜ = S₀ · exp((r − q − ½σ²)T + σ√T · Z),  where Z ~ N(0, 1)
 
 A European option value is the discounted expectation of its payoff:
 
-\[
-V = e^{-rT}\,\mathbb{E}[\text{payoff}(S_T)].
-\]
+V = e^(−rT) · E[ payoff(Sₜ) ]
 
-Monte Carlo approximates the expectation with a sample mean over `n_paths`. Uncertainty is quantified by the **standard error**:
+Monte Carlo approximates the expectation with a sample mean over n_paths. Uncertainty is quantified by the standard error:
 
-\[
-\text{stderr} = \frac{s}{\sqrt{n}},
-\]
+stderr = s / √n
 
-and a normal-approximation **95% confidence interval**:
+and a normal-approximation 95% confidence interval:
 
-\[
-\hat{V} \pm 1.96 \cdot \text{stderr}.
-\]
+V̂ ± 1.96 · stderr
 
 ### Variance reduction
 
