@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-
-from mc_pricer.bs_closed_form import BSParams, bs_price
+from mc_pricer.bs_closed_form import BSParams, bs_delta, bs_price, bs_vega
+from mc_pricer.greeks import mc_delta_fd_crn, mc_delta_pathwise, mc_vega_fd_crn
 from mc_pricer.pricer import mc_price_european_vanilla, mc_price_european_vanilla_cv
-from mc_pricer.greeks import mc_delta_pathwise, mc_delta_fd_crn, mc_vega_fd_crn
-from mc_pricer.bs_closed_form import bs_delta, bs_vega
 
 
 def main() -> None:
@@ -53,13 +51,18 @@ def main() -> None:
 
     print("\nGreeks (CALL):")
     print(
-        f"  Delta (pathwise): {delta_pw.value:.6f}  CI95={delta_pw.ci95}  BS={bs_delta(p,'call'):.6f}"
+        f"  Delta (pathwise): {delta_pw.value:.6f}  CI95={delta_pw.ci95}  "
+        f"BS={bs_delta(p, 'call'):.6f}"
     )
+
     print(
-        f"  Delta (FD+CRN):   {delta_fd.value:.6f}  CI95={delta_fd.ci95}  BS={bs_delta(p,'call'):.6f}"
+        f"  Delta (FD+CRN):   {delta_fd.value:.6f}  CI95={delta_fd.ci95}  "
+        f"BS={bs_delta(p, 'call'):.6f}"
     )
+
     print(
-        f"  Vega  (FD+CRN):   {vega_fd.value:.6f}  CI95={vega_fd.ci95}  BS={bs_vega(p):.6f}"
+        f"  Vega  (FD+CRN):   {vega_fd.value:.6f}  CI95={vega_fd.ci95}  "
+        f"BS={bs_vega(p):.6f}"
     )
 
 

@@ -37,11 +37,12 @@ def main() -> int:
 
         print(f"{opt.upper():>4} price:")
         print(
-            f"  MC={mc.price:.6f}  stderr={mc.stderr:.6f}  CI95={mc.ci95}  BS={bs:.6f}  |err|={err:.6f}"
+            f"  MC={mc.price:.6f}  stderr={mc.stderr:.6f}  CI95={mc.ci95}  "
+            f"BS={bs:.6f}  |err|={err:.6f}"
         )
         _assert(
             err <= k * mc.stderr,
-            f"{opt} MC price too far from BS: |err|={err} > {k}*stderr={k*mc.stderr}",
+            f"{opt} MC price too far from BS: |err|={err} > {k}*stderr={k * mc.stderr}",
         )
 
         # ---------- Control Variate smoke ----------
@@ -51,8 +52,10 @@ def main() -> int:
         # CV should reduce variance typically; use a soft check.
         # We accept "no worse than" in rare edge cases.
         print(
-            f"  CV={mc_cv.price:.6f}  stderr={mc_cv.stderr:.6f}  CI95={mc_cv.ci95}  beta={mc_cv.beta:.4f}"
+            f"  CV={mc_cv.price:.6f}  stderr={mc_cv.stderr:.6f}  CI95={mc_cv.ci95}  "
+            f"beta={mc_cv.beta:.4f}"
         )
+
         _assert(
             mc_cv.stderr <= mc.stderr * 1.05,
             f"{opt} CV stderr not improved: cv={mc_cv.stderr} vs plain={mc.stderr}",
@@ -86,15 +89,26 @@ def main() -> int:
     # Use stderr-based tolerances (robust across platforms).
     _assert(
         abs(delta_pw.value - bs_d) <= 5.0 * delta_pw.stderr,
-        f"Pathwise delta too far from BS: |err|={abs(delta_pw.value - bs_d)} > 5*stderr={5*delta_pw.stderr}",
+        (
+            "Pathwise delta too far from BS: "
+            f"|err|={abs(delta_pw.value - bs_d)} > 5*stderr={5 * delta_pw.stderr}"
+        ),
     )
+
     _assert(
         abs(delta_fd.value - bs_d) <= 5.0 * delta_fd.stderr,
-        f"FD+CRN delta too far from BS: |err|={abs(delta_fd.value - bs_d)} > 5*stderr={5*delta_fd.stderr}",
+        (
+            "FD+CRN delta too far from BS: "
+            f"|err|={abs(delta_fd.value - bs_d)} > 5*stderr={5 * delta_fd.stderr}"
+        ),
     )
+
     _assert(
         abs(vega_fd.value - bs_v) <= 6.0 * vega_fd.stderr,
-        f"FD+CRN vega too far from BS: |err|={abs(vega_fd.value - bs_v)} > 6*stderr={6*vega_fd.stderr}",
+        (
+            "FD+CRN vega too far from BS: "
+            f"|err|={abs(vega_fd.value - bs_v)} > 6*stderr={6 * vega_fd.stderr}"
+        ),
     )
 
     print("\nE2E smoke passed.")

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 
@@ -19,7 +19,7 @@ class GreekResult:
     ci_low: float
     ci_high: float
     n_paths: int
-    seed: Optional[int]
+    seed: int | None
     antithetic: bool
 
     @property
@@ -27,7 +27,7 @@ class GreekResult:
         return (self.ci_low, self.ci_high)
 
 
-def _z_for_paths(n_paths: int, seed: Optional[int], antithetic: bool) -> np.ndarray:
+def _z_for_paths(n_paths: int, seed: int | None, antithetic: bool) -> np.ndarray:
     rng = np.random.default_rng(seed)
     if not antithetic:
         return rng.standard_normal(n_paths)
@@ -81,7 +81,7 @@ def mc_delta_pathwise(
     option: OptionType,
     *,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
     ci_level: float = 0.95,
 ) -> GreekResult:
@@ -127,7 +127,7 @@ def mc_delta_fd_crn(
     option: OptionType,
     *,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
     eps_rel: float = 1e-4,
     ci_level: float = 0.95,
@@ -160,7 +160,7 @@ def mc_vega_fd_crn(
     option: OptionType,
     *,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
     eps_abs: float = 1e-4,
     ci_level: float = 0.95,

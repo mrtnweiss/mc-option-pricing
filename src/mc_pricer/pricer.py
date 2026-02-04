@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Literal
 
 import numpy as np
 
@@ -20,12 +20,12 @@ class MCResult:
     ci_low: float
     ci_high: float
     n_paths: int
-    seed: Optional[int]
+    seed: int | None
     antithetic: bool
 
     # Optional metadata (harmless for existing code)
     control: str = "none"
-    beta: Optional[float] = None
+    beta: float | None = None
 
     @property
     def ci95(self) -> tuple[float, float]:
@@ -80,7 +80,7 @@ def mc_price_european_vanilla(
     option: OptionType,
     *,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
     ci_level: float = 0.95,
 ) -> MCResult:
@@ -134,7 +134,7 @@ def mc_price_european_vanilla_cv(
     option: OptionType,
     *,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
     ci_level: float = 0.95,
 ) -> MCResult:

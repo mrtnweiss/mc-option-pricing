@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "mc-option-pricing"
 version = "0.1.0"
@@ -11,10 +15,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=7.0",
+  "pytest>=8.0",
   "ruff>=0.5",
   "black>=24.0",
 ]
+
+[project.scripts]
+mc-pricer = "mc_pricer.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -22,3 +29,14 @@ pythonpath = ["src"]
 markers = [
   "slow: long-running tests (Monte Carlo stability)"
 ]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
