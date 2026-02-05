@@ -55,6 +55,7 @@ def simulate_gbm_terminal(
     ST = S0 * np.exp(drift + vol_sqrt_t * z)
     return ST
 
+
 def simulate_gbm_paths(
     *,
     S0: float,

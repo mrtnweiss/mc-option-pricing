@@ -16,6 +16,7 @@ def payoff_put(ST: np.ndarray, K: float) -> np.ndarray:
         raise ValueError("K must be > 0")
     return np.maximum(K - ST, 0.0)
 
+
 def payoff_asian_arithmetic_call(paths: np.ndarray, K: float) -> np.ndarray:
     """Arithmetic-average Asian call payoff: max(avg(S) - K, 0)."""
     if K <= 0.0:

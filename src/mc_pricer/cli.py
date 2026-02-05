@@ -4,9 +4,11 @@ import argparse
 
 from mc_pricer.bs_closed_form import BSParams, bs_delta, bs_price, bs_vega
 from mc_pricer.greeks import mc_delta_fd_crn, mc_delta_pathwise, mc_vega_fd_crn
-from mc_pricer.pricer import mc_price_european_vanilla, mc_price_european_vanilla_cv
-from mc_pricer.pricer import mc_price_asian_arithmetic
-
+from mc_pricer.pricer import (
+    mc_price_asian_arithmetic,
+    mc_price_european_vanilla,
+    mc_price_european_vanilla_cv,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -40,8 +42,10 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument(
         "--bump-sigma", type=float, default=1e-4, help="Absolute bump for sigma in FD."
     )
-
-    asian = sub.add_parser("asian", help="Price arithmetic-average Asian options (discrete monitoring).")
+    asian = sub.add_parser(
+        "asian",
+        help="Price arithmetic-average Asian options (discrete monitoring).",
+    )
     asian.add_argument("--s0", type=float, default=100.0)
     asian.add_argument("--k", type=float, default=100.0)
     asian.add_argument("--r", type=float, default=0.02)
@@ -54,7 +58,6 @@ def build_parser() -> argparse.ArgumentParser:
     asian.add_argument("--n-steps", type=int, default=50)
     asian.add_argument("--seed", type=int, default=42)
     asian.add_argument("--antithetic", action="store_true")
-
 
     return parser
 
@@ -140,6 +143,7 @@ def cmd_demo(args: argparse.Namespace) -> None:
             f"BS={bs_v:.6f}"
         )
 
+
 def cmd_asian(args: argparse.Namespace) -> None:
     p = BSParams(S0=args.s0, K=args.k, r=args.r, q=args.q, sigma=args.sigma, T=args.t)
 
@@ -156,13 +160,13 @@ def cmd_asian(args: argparse.Namespace) -> None:
     print("Parameters:")
     print(
         f"  S0={p.S0}, K={p.K}, r={p.r}, q={p.q}, sigma={p.sigma}, T={p.T}\n"
-        f"  n_paths={args.n_paths}, n_steps={args.n_steps}, seed={args.seed}, antithetic={args.antithetic}\n"
+        f"  n_paths={args.n_paths}, n_steps={args.n_steps}, seed={args.seed}, "
+        f"antithetic={args.antithetic}\n"
     )
     print(
-        f"ASIAN {args.option.upper():>4} | MC= {res.price:9.6f}  stderr={res.stderr:8.6f}  "
-        f"CI95=[{lo:9.6f}, {hi:9.6f}]"
+        f"ASIAN {args.option.upper():>4} | MC= {res.price:9.6f}  "
+        f"stderr={res.stderr:8.6f}  CI95=[{lo:9.6f}, {hi:9.6f}]"
     )
-
 
 
 def main() -> None:

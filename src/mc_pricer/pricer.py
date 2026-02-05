@@ -7,10 +7,13 @@ from typing import Literal
 import numpy as np
 
 from mc_pricer.bs_closed_form import BSParams
-from mc_pricer.paths import simulate_gbm_terminal
-from mc_pricer.products import payoff_call, payoff_put
-from mc_pricer.paths import simulate_gbm_paths
-from mc_pricer.products import payoff_asian_arithmetic_call, payoff_asian_arithmetic_put
+from mc_pricer.paths import simulate_gbm_paths, simulate_gbm_terminal
+from mc_pricer.products import (
+    payoff_asian_arithmetic_call,
+    payoff_asian_arithmetic_put,
+    payoff_call,
+    payoff_put,
+)
 
 OptionType = Literal["call", "put"]
 
@@ -194,6 +197,7 @@ def mc_price_european_vanilla_cv(
         beta=beta,
     )
 
+
 def mc_price_asian_arithmetic(
     p: BSParams,
     option: OptionType,
@@ -205,6 +209,8 @@ def mc_price_asian_arithmetic(
     ci_level: float = 0.95,
 ) -> MCResult:
     """Monte Carlo price for arithmetic-average Asian option (discrete monitoring)."""
+    if ci_level <= 0.0 or ci_level >= 1.0:
+        raise ValueError("ci_level must be in (0,1)")
     if n_steps <= 0:
         raise ValueError("n_steps must be > 0")
 
@@ -222,20 +228,27 @@ def mc_price_asian_arithmetic(
 
     disc = math.exp(-p.r * p.T)
 
-    if option == "call":
-        payoff = payoff_asian_arithmetic_call(paths, p.K)
-    else:
-        payoff = payoff_asian_arithmetic_put(paths, p.K)
+    payoff = (
+        payoff_asian_arithmetic_call(paths, p.K)
+        if option == "call"
+        else payoff_asian_arithmetic_put(paths, p.K)
+    )
 
-    x = disc * payoff
-    mean, stderr = _mean_stderr(x)
-    lo, hi = _ci(mean, stderr, ci_level)
+    discounted_payoff = disc * payoff
+    price, stderr = _mc_mean_and_stderr(discounted_payoff)
+
+    z = _z_for_ci(ci_level)
+    ci_low = price - z * stderr
+    ci_high = price + z * stderr
+
     return MCResult(
-        price=mean,
+        price=price,
         stderr=stderr,
-        ci_low=lo,
-        ci_high=hi,
+        ci_low=ci_low,
+        ci_high=ci_high,
         n_paths=n_paths,
         seed=seed,
         antithetic=antithetic,
+        control="none",
+        beta=None,
     )
