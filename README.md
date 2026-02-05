@@ -5,6 +5,7 @@ Monte Carlo option pricing under **Black–Scholes (GBM)** with confidence inter
 ## Features
 
 - European call/put pricing via Monte Carlo (terminal simulation under GBM)
+- Arithmetic-average Asian option pricing (discrete monitoring)
 - Standard error and **95% confidence interval**
 - Variance reduction
   - **Antithetic variates**
@@ -59,6 +60,12 @@ Useful knobs:
 python -m mc_pricer demo --cv --greeks --antithetic --n-paths 80000
 ```
 
+### Asian option (arithmetic average)
+
+```bash
+mc-pricer asian --option call --n-paths 200000 --n-steps 50 --antithetic
+```
+
 ### E2E smoke test
 
 ```bash
@@ -79,7 +86,7 @@ A European option value is the discounted expectation of its payoff:
 
 V = e^(−rT) · E[ payoff(Sₜ) ]
 
-Monte Carlo approximates the expectation with a sample mean over n_paths. Uncertainty is quantified by the standard error:
+Monte Carlo approximates the expectation with a sample mean over `n_paths`. Uncertainty is quantified by the standard error:
 
 stderr = s / √n
 
@@ -89,7 +96,7 @@ V̂ ± 1.96 · stderr
 
 ### Variance reduction
 
-- **Antithetic variates:** simulate paired normals \(Z\) and \(-Z\) to reduce variance.
+- **Antithetic variates:** simulate paired normals Z and -Z to reduce variance.
 - **Control variate:** use a correlated quantity with known expectation to reduce estimator variance (beta is estimated from sample covariance).
 - **CRN (common random numbers):** reuse identical random numbers for “bumped” simulations to reduce noise in finite-difference Greeks.
 
@@ -124,7 +131,9 @@ Run a small benchmark comparing variance reduction methods (plain vs antithetic 
 
 ```bash
 python scripts/benchmark.py
+```
 
+```bash
 Benchmark: European CALL  n_paths=200000  seed=42
 BS price: 8.349406
 
@@ -134,6 +143,8 @@ plain                          8.366485     0.030046     0.017079      0.007
 antithetic                     8.373232     0.030022     0.023826      0.008
 control-variate (antithetic)   8.364304     0.013245     0.014898      0.013
 ```
+
+Note: results vary by platform/seed; control variates typically reduce stderr most noticeably.
 
 ## Project layout
 
