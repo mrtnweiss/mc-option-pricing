@@ -118,6 +118,23 @@ pytest -q -m slow
 
 ---
 
+## Benchmark
+
+Run a small benchmark comparing variance reduction methods (plain vs antithetic vs control variate):
+
+```bash
+python scripts/benchmark.py
+
+Benchmark: European CALL  n_paths=200000  seed=42
+BS price: 8.349406
+
+method                            price       stderr        |err|    time(s)
+----------------------------------------------------------------------------
+plain                          8.366485     0.030046     0.017079      0.007
+antithetic                     8.373232     0.030022     0.023826      0.008
+control-variate (antithetic)   8.364304     0.013245     0.014898      0.013
+```
+
 ## Project layout
 
 - `src/mc_pricer/` — library code
