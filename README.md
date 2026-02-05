@@ -118,6 +118,13 @@ pytest -q -m slow
 
 ---
 
+## Benchmark
+
+Run a small benchmark comparing variance reduction methods (plain vs antithetic vs control variate):
+
+```bash
+python scripts/benchmark.py
+
 ## Project layout
 
 - `src/mc_pricer/` — library code
