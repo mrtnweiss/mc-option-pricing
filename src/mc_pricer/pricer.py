@@ -7,8 +7,13 @@ from typing import Literal
 import numpy as np
 
 from mc_pricer.bs_closed_form import BSParams
-from mc_pricer.paths import simulate_gbm_terminal
-from mc_pricer.products import payoff_call, payoff_put
+from mc_pricer.paths import simulate_gbm_paths, simulate_gbm_terminal
+from mc_pricer.products import (
+    payoff_asian_arithmetic_call,
+    payoff_asian_arithmetic_put,
+    payoff_call,
+    payoff_put,
+)
 
 OptionType = Literal["call", "put"]
 
@@ -190,4 +195,60 @@ def mc_price_european_vanilla_cv(
         antithetic=antithetic,
         control="disc_stock",
         beta=beta,
+    )
+
+
+def mc_price_asian_arithmetic(
+    p: BSParams,
+    option: OptionType,
+    *,
+    n_paths: int,
+    n_steps: int = 50,
+    seed: int | None = None,
+    antithetic: bool = False,
+    ci_level: float = 0.95,
+) -> MCResult:
+    """Monte Carlo price for arithmetic-average Asian option (discrete monitoring)."""
+    if ci_level <= 0.0 or ci_level >= 1.0:
+        raise ValueError("ci_level must be in (0,1)")
+    if n_steps <= 0:
+        raise ValueError("n_steps must be > 0")
+
+    paths = simulate_gbm_paths(
+        S0=p.S0,
+        r=p.r,
+        q=p.q,
+        sigma=p.sigma,
+        T=p.T,
+        n_paths=n_paths,
+        n_steps=n_steps,
+        seed=seed,
+        antithetic=antithetic,
+    )
+
+    disc = math.exp(-p.r * p.T)
+
+    payoff = (
+        payoff_asian_arithmetic_call(paths, p.K)
+        if option == "call"
+        else payoff_asian_arithmetic_put(paths, p.K)
+    )
+
+    discounted_payoff = disc * payoff
+    price, stderr = _mc_mean_and_stderr(discounted_payoff)
+
+    z = _z_for_ci(ci_level)
+    ci_low = price - z * stderr
+    ci_high = price + z * stderr
+
+    return MCResult(
+        price=price,
+        stderr=stderr,
+        ci_low=ci_low,
+        ci_high=ci_high,
+        n_paths=n_paths,
+        seed=seed,
+        antithetic=antithetic,
+        control="none",
+        beta=None,
     )

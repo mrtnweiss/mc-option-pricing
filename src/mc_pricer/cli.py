@@ -4,7 +4,11 @@ import argparse
 
 from mc_pricer.bs_closed_form import BSParams, bs_delta, bs_price, bs_vega
 from mc_pricer.greeks import mc_delta_fd_crn, mc_delta_pathwise, mc_vega_fd_crn
-from mc_pricer.pricer import mc_price_european_vanilla, mc_price_european_vanilla_cv
+from mc_pricer.pricer import (
+    mc_price_asian_arithmetic,
+    mc_price_european_vanilla,
+    mc_price_european_vanilla_cv,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,6 +42,22 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument(
         "--bump-sigma", type=float, default=1e-4, help="Absolute bump for sigma in FD."
     )
+    asian = sub.add_parser(
+        "asian",
+        help="Price arithmetic-average Asian options (discrete monitoring).",
+    )
+    asian.add_argument("--s0", type=float, default=100.0)
+    asian.add_argument("--k", type=float, default=100.0)
+    asian.add_argument("--r", type=float, default=0.02)
+    asian.add_argument("--q", type=float, default=0.01)
+    asian.add_argument("--sigma", type=float, default=0.2)
+    asian.add_argument("--t", type=float, default=1.0)
+
+    asian.add_argument("--option", choices=["call", "put"], default="call")
+    asian.add_argument("--n-paths", type=int, default=200_000)
+    asian.add_argument("--n-steps", type=int, default=50)
+    asian.add_argument("--seed", type=int, default=42)
+    asian.add_argument("--antithetic", action="store_true")
 
     return parser
 
@@ -124,12 +144,40 @@ def cmd_demo(args: argparse.Namespace) -> None:
         )
 
 
+def cmd_asian(args: argparse.Namespace) -> None:
+    p = BSParams(S0=args.s0, K=args.k, r=args.r, q=args.q, sigma=args.sigma, T=args.t)
+
+    res = mc_price_asian_arithmetic(
+        p,
+        option=args.option,
+        n_paths=args.n_paths,
+        n_steps=args.n_steps,
+        seed=args.seed,
+        antithetic=args.antithetic,
+    )
+
+    lo, hi = res.ci95
+    print("Parameters:")
+    print(
+        f"  S0={p.S0}, K={p.K}, r={p.r}, q={p.q}, sigma={p.sigma}, T={p.T}\n"
+        f"  n_paths={args.n_paths}, n_steps={args.n_steps}, seed={args.seed}, "
+        f"antithetic={args.antithetic}\n"
+    )
+    print(
+        f"ASIAN {args.option.upper():>4} | MC= {res.price:9.6f}  "
+        f"stderr={res.stderr:8.6f}  CI95=[{lo:9.6f}, {hi:9.6f}]"
+    )
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
     if args.cmd == "demo":
         cmd_demo(args)
+
+    elif args.cmd == "asian":
+        cmd_asian(args)
 
 
 if __name__ == "__main__":
