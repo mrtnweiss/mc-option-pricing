@@ -1,5 +1,8 @@
 # MC Option Pricing
 
+**Author:** Martin Weiss (GitHub: [`mrtnweiss`](https://github.com/mrtnweiss))  
+**Note:** Some commits are attributed to [`uzewe`](https://github.com/uzewe) (university account / git config); both accounts are mine.
+
 Monte Carlo option pricing under **Black–Scholes (GBM)** with confidence intervals, Greeks, and variance reduction (antithetic variates, control variate, CRN finite differences).
 
 ## Features
